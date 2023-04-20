@@ -60,7 +60,7 @@ jobs:
           aws-region: ap-northeast-2
       
       - name: upload to S3
-        run: aws s3 cp --region ap-northeast-2 ./Login_front.tar.gz s3://code-deploy-fins/archive/
+        run: aws s3 cp --region ap-northeast-2 Login_front.tar.gz s3://code-deploy-fins/archive/
         
       - name: deploy with AWS codeDeploy
         run: aws deploy create-deployment
