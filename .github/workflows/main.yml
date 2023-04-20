@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI/CD
+name: build/CI/CD
 
 # Controls when the workflow will run
 on:
@@ -14,7 +14,23 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  deploy:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+     strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run build --if-present
+  
+  CI :
     runs-on: ubuntu-latest
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -24,14 +40,16 @@ jobs:
     - name: archive Login_front
       run: |
         tar cvfz Login_front.tar.gz *
-      
+
     - name: AWS configure credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.ACCESS_KEY }}
         aws-secret-access-key: ${{ secrets.SECRET_KEY }}
         aws-region: ap-northeast-2
-        
+  CD :
+    runs-on: ubuntu-latest
+    steps:
     - name: upload to S3
       run: aws s3 cp --region ap-northeast-2 ./Login_front.tar.gz s3://code-deploy-fins/archive/
       
