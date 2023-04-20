@@ -16,10 +16,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-     strategy:
-      matrix:
-        node-version: [18.x]
+    strategy:
+    matrix:
+      node-version: [18.x]
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
