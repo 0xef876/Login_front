@@ -24,9 +24,9 @@ jobs:
       with:
         node-version: 18
 
-    - name: Build
+    - name: test
       run: |
-        npm run build
+        npm run test
       
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: checkout release
