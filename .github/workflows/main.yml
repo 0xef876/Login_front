@@ -17,16 +17,19 @@ jobs:
   # This workflow contains a single job called "build" 
   build:
     runs-on: ubuntu-latest
-    
+    strategy:
+      matrix:
+        node-version: [18.x]
     steps:
-    - name: Setup Node.js
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
-        node-version: 18
-
-    - name: test
-      run: |
-        npm run test
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm test
       
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: checkout release
