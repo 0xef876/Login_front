@@ -31,7 +31,7 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
   
-    CI/CD :
+    CI_CD :
       runs-on: ubuntu-latest
 
       needs : build
