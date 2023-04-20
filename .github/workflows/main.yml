@@ -23,10 +23,9 @@ jobs:
     - name: checkout release
       uses: actions/checkout@v3
 
-    - name: archive Login
+    - name: archive Login_front
       run: |
-        cd Login
-        tar cvfz Login.tar.gz *
+        tar cvfz Login_front.tar.gz *
        
     - name: AWS configure credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -36,11 +35,11 @@ jobs:
         aws-region: ap-northeast-2
         
     - name: upload to S3
-      run: aws s3 cp --region ap-northeast-2 ./Login.tar.gz s3://code-deploy-fins/archive/
+      run: aws s3 cp --region ap-northeast-2 ./Login_front.tar.gz s3://code-deploy-fins/archive/
       
     - name: deploy with AWS codeDeploy
       run: aws deploy create-deployment
         --application-name S3-code-deploy
         --deployment-config-name CodeDeployDefault.OneAtATime
         --deployment-group-name github-action-test
-        --s3-location bucket=code-deploy-fins,bundleType=tgz,key=archive/Login.tar.gz
+        --s3-location bucket=code-deploy-fins,bundleType=tgz,key=archive/Login_front.tar.gz
