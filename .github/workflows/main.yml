@@ -31,6 +31,7 @@ jobs:
   
   CI :
     runs-on: ubuntu-latest
+    needs : build
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: checkout release
@@ -48,6 +49,7 @@ jobs:
         aws-region: ap-northeast-2
   CD :
     runs-on: ubuntu-latest
+    needs : CI
     steps:
     - name: upload to S3
       run: aws s3 cp --region ap-northeast-2 ./Login_front.tar.gz s3://code-deploy-fins/archive/
