@@ -27,10 +27,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        cd Login
         npm install
 
     - name: Build
       run: |
-        cd Login
         npm run build
