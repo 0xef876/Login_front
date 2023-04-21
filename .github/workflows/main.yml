@@ -1,50 +1,53 @@
-# This is a basic workflow to help you get started with Actions
-
 name: build/CI/CD
 
-# Controls when the workflow will run
 on:
-  # 지정한 branch에서 push/pull_request 에 해당하는 command가 수행되면 이 workflow가 동작 합니다. 
-  # 여기서는 간단히 main 브런치에서 push되면서 이 workflow가 실행 되도록 하겠습니다.
+  # main 브런치가 push 했을때
   push:
     branches: [ main ] 
  
-  # 이부분은 위의 trigger가 없어도 수동으로 동작 할 수 있게끔 해주는 역할을 합니다.
+  # 이부분은 위의 trigger가 없어도 수동으로 동작 할 수 있게끔 해주는 역할
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+# 해야 될 일 정의
 jobs:
+    # job 이름 정의
     build:
       runs-on: ubuntu-latest
       
+      # 노드 버전 설정
       strategy:
         matrix:
           node-version: [18.x]
 
+      # 일 순서
       steps:
+      # {소유자}/{저장소명}@{참조자}의 형태로 명시 GitHub에서 제공하는 체크아웃 액션의 소유자는 actions이고, 저장소 이름은 checkout
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: npm ci
+      - run: npm install
       - run: npm run build --if-present
   
+  # job 이름 정의
     CI_CD :
       runs-on: ubuntu-latest
-
+      # build job이 끝나야 실행
       needs : build
       
       steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+
       - name: checkout release
         uses: actions/checkout@v3
       
+      # Login_front 를 tar로 압축
       - name: archive Login_front
         run: |
           tar cvfz Login_front.tar.gz *
 
+      # AWS 인증 
       - name: AWS configure credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -52,9 +55,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.SECRET_KEY }}
           aws-region: ap-northeast-2
       
+      # AWS S3 버킷에 tar 업로드
       - name: upload to S3
         run: aws s3 cp --region ap-northeast-2 ./Login_front.tar.gz s3://code-deploy-fins/archive/
-        
+      
+      # AWS CodeDeploy 를 이용하여 tar압축을 풀어서 배포
       - name: deploy with AWS codeDeploy
         run: aws deploy create-deployment
           --application-name S3-code-deploy
