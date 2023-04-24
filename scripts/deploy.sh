@@ -1,5 +1,5 @@
 #!/bin/bash
-REPOSITORY=/var/www/
+REPOSITORY=/var/www/html/front
 
 cd $REPOSITORY
 
